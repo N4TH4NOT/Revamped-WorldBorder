@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerList.class)
 public class MixinPlayerList {
-    private static final Logger LOGGER = LogUtils.getLogger();
 
     @Inject(at=@At("HEAD"), method="sendLevelInfo(Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/server/level/ServerLevel;)V", cancellable = true)
     public void sendLevelInfo(ServerPlayer player, ServerLevel level, CallbackInfo callbackInfo) {
