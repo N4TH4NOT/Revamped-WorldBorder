@@ -3,6 +3,7 @@ package com.intelliapps.dimensionalworldborder;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,7 +14,6 @@ import net.minecraft.world.level.border.WorldBorder;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
@@ -22,17 +22,29 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import org.slf4j.Logger;
 
-import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.intelliapps.dimensionalworldborder.DimensionalWorldBorder.MOD_ID;
+
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("dimensionalworldborder")
+@Mod(MOD_ID)
 public class DimensionalWorldBorder
 {
     // Directly reference a slf4j logger
+    public static final String MOD_ID = "dimensionalworldborder";
     private static final Logger LOGGER = LogUtils.getLogger();
+
+    private static final String NETWORK_PROTOCOL_VERSION = "1";
+    public static final SimpleChannel NETWORK_CHANNEL = NetworkRegistry.newSimpleChannel(
+            new ResourceLocation(MOD_ID, "main"),
+            () -> NETWORK_PROTOCOL_VERSION,
+            NETWORK_PROTOCOL_VERSION::equals,
+            NETWORK_PROTOCOL_VERSION::equals
+    );
 
     public DimensionalWorldBorder()
     {
@@ -45,6 +57,14 @@ public class DimensionalWorldBorder
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+
+        int networkId = 0;
+        NETWORK_CHANNEL.registerMessage(networkId++,
+                ClientboundInitialiseDimensionalBorderPacket.class,
+                ClientboundInitialiseDimensionalBorderPacket::encode,
+                ClientboundInitialiseDimensionalBorderPacket::decode,
+                ClientboundInitialiseDimensionalBorderPacket::handle
+        );
     }
 
     private void setup(final FMLCommonSetupEvent event)
@@ -89,23 +109,6 @@ public class DimensionalWorldBorder
         {
             this.addWorldborderListener(level);
         }
-    }
-
-    @SubscribeEvent
-    public void onPlayerChangedDimensionEvent(PlayerEvent.PlayerChangedDimensionEvent event)
-    {
-        LOGGER.info(event.getPlayer().getName().getString() + " changed dim");
-        LOGGER.info(String.valueOf(event.getPlayer().getLevel().isClientSide));
-    }
-
-    @SubscribeEvent
-    public void onPlayerRespawnEvent(PlayerEvent.PlayerRespawnEvent event)
-    {
-        LOGGER.info(event.getPlayer().getName().getString() + " died");
-        LOGGER.info(String.valueOf(event.getPlayer().getLevel().isClientSide));
-        LOGGER.info(event.getPlayer().getLevel().dimension().toString());
-        LOGGER.info(event.getPlayer().getClass().getName());
-        LOGGER.info(String.valueOf(Objects.requireNonNull(event.getPlayer().getServer()).overworld().getWorldBorder().listeners));
     }
 
     public void broadcastToAllLevelPlayers(ServerLevel level, Packet<?> packet)
