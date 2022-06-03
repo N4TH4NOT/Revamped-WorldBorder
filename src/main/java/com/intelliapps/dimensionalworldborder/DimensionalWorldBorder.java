@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.border.BorderChangeListener;
@@ -14,6 +15,7 @@ import net.minecraft.world.level.border.WorldBorder;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
@@ -24,6 +26,7 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.slf4j.Logger;
 
 import java.util.stream.Collectors;
@@ -108,7 +111,21 @@ public class DimensionalWorldBorder
         for (ServerLevel level: server.getAllLevels())
         {
             this.addWorldborderListener(level);
+            DimensionalWBSavedData.get(level).applyTo(level.getWorldBorder());
         }
+    }
+
+    @SubscribeEvent
+    public void onWorldSave(WorldEvent.Save event) {
+        LevelAccessor levelAccessor = event.getWorld();
+        try {
+            assert levelAccessor instanceof ServerLevel;
+        }
+        catch (AssertionError error) {
+            return;
+        }
+        ServerLevel level = (ServerLevel) levelAccessor;
+        DimensionalWBSavedData.get(level).setWorldborderSettings(level.getWorldBorder().createSettings());
     }
 
     public void broadcastToAllLevelPlayers(ServerLevel level, Packet<?> packet)
