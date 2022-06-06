@@ -18,7 +18,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.0'
+version = '1.18.2-1.0.0.0'
 group = 'com.intelliapps.dimensionalworldborder' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'dimensionalworldborder'
 
@@ -159,7 +159,7 @@ dependencies {
     // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft', it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.18.2-40.1.31'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.1.47'
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
