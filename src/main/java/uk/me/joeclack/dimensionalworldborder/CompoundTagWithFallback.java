@@ -1,4 +1,4 @@
-package com.intelliapps.dimensionalworldborder;
+package uk.me.joeclack.dimensionalworldborder;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NumericTag;

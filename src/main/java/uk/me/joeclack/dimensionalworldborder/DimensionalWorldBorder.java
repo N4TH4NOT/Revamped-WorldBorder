@@ -1,4 +1,4 @@
-package com.intelliapps.dimensionalworldborder;
+package uk.me.joeclack.dimensionalworldborder;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.protocol.Packet;
@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 
 import java.util.stream.Collectors;
 
-import static com.intelliapps.dimensionalworldborder.DimensionalWorldBorder.MOD_ID;
+import static uk.me.joeclack.dimensionalworldborder.DimensionalWorldBorder.MOD_ID;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(MOD_ID)

@@ -1,4 +1,4 @@
-package com.intelliapps.dimensionalworldborder;
+package uk.me.joeclack.dimensionalworldborder;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;

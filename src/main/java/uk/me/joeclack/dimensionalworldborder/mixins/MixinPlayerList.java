@@ -1,7 +1,7 @@
-package com.intelliapps.dimensionalworldborder.mixins;
+package uk.me.joeclack.dimensionalworldborder.mixins;
 
-import com.intelliapps.dimensionalworldborder.ClientboundInitialiseDimensionalBorderPacket;
-import com.intelliapps.dimensionalworldborder.DimensionalWorldBorder;
+import uk.me.joeclack.dimensionalworldborder.ClientboundInitialiseDimensionalBorderPacket;
+import uk.me.joeclack.dimensionalworldborder.DimensionalWorldBorder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;

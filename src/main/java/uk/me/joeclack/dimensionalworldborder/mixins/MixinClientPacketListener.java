@@ -1,4 +1,4 @@
-package com.intelliapps.dimensionalworldborder.mixins;
+package uk.me.joeclack.dimensionalworldborder.mixins;
 
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundInitializeBorderPacket;
