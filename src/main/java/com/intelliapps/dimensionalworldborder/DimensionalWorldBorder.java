@@ -26,7 +26,6 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
-import org.apache.logging.log4j.core.jmx.Server;
 import org.slf4j.Logger;
 
 import java.util.stream.Collectors;
