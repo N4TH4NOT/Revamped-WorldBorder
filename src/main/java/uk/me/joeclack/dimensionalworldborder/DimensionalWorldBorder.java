@@ -14,7 +14,6 @@ import net.minecraft.world.level.border.BorderChangeListener;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
@@ -51,11 +50,11 @@ public class DimensionalWorldBorder
     public DimensionalWorldBorder()
     {
         // Register the setup method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        // FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         // Register the enqueueIMC method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+        // FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         // Register the processIMC method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
+        // FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -72,22 +71,20 @@ public class DimensionalWorldBorder
     private void setup(final FMLCommonSetupEvent event)
     {
         // some preinit code
-        LOGGER.info("HELLO FROM PREINIT");
-        LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
     {
         // Some example code to dispatch IMC to another mod
-        InterModComms.sendTo("examplemod", "helloworld", () -> { LOGGER.info("Hello world from the MDK"); return "Hello world";});
+        // InterModComms.sendTo("examplemod", "helloworld", () -> { LOGGER.info("Hello world from the MDK"); return "Hello world";});
     }
 
     private void processIMC(final InterModProcessEvent event)
     {
         // Some example code to receive and process InterModComms from other mods
-        LOGGER.info("Got IMC {}", event.getIMCStream().
-                map(m->m.messageSupplier().get()).
-                collect(Collectors.toList()));
+        // LOGGER.info("Got IMC {}", event.getIMCStream().
+        //        map(m->m.messageSupplier().get()).
+        //        collect(Collectors.toList()));
     }
 
     @SubscribeEvent
@@ -101,17 +98,20 @@ public class DimensionalWorldBorder
     public void onServerStarting(ServerStartingEvent event)
     {
         // Do something when the server starts
-        LOGGER.info("HELLO from server starting");
+        LOGGER.info("Clearing overworld border listeners...");
 
         MinecraftServer server = event.getServer();
         WorldBorder overworldBorder = server.overworld().getWorldBorder();
         overworldBorder.listeners.clear();
 
+        LOGGER.info("Registering own world border listeners...");
         for (ServerLevel level: server.getAllLevels())
         {
             this.addWorldborderListener(level);
             DimensionalWBSavedData.get(level).applyTo(level.getWorldBorder());
         }
+
+        LOGGER.info("Successfully completed server-starting setup.");
     }
 
     @SubscribeEvent
@@ -124,6 +124,7 @@ public class DimensionalWorldBorder
             return;
         }
         ServerLevel level = (ServerLevel) levelAccessor;
+        LOGGER.info("Saving worldborder settings for '" + level.dimension().location().toString() + "'...");
         DimensionalWBSavedData.get(level).setWorldborderSettings(level.getWorldBorder().createSettings());
     }
 
@@ -165,18 +166,5 @@ public class DimensionalWorldBorder
             public void onBorderSetDamageSafeZOne(WorldBorder border, double damageSafeZone) {
             }
         });
-    }
-
-    // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
-    // Event bus for receiving Registry Events)
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents
-    {
-        @SubscribeEvent
-        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent)
-        {
-            // Register a new block here
-            LOGGER.info("HELLO from Register Block");
-        }
     }
 }
