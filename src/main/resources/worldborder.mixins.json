@@ -3,10 +3,12 @@
   "package": "fr.n4th4not.worldborder.mixins",
   "compatibilityLevel": "JAVA_17",
   "refmap": "worldborder.refmap.json",
-  "server": [
-    "WorldBorderCommandMixin",
+  "mixins": [
     "DerivedLevelDataMixin",
-    "PrimaryLevelDataMixin"
+    "MinecraftServerMixin",
+    "PrimaryLevelDataMixin",
+    "WorldBorderCommandMixin",
+    "WorldBorderMixin"
   ],
   "minVersion": "0.8"
 }
