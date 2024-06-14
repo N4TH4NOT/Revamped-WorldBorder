@@ -6,6 +6,7 @@
   "mixins": [
     "DerivedLevelDataMixin",
     "MinecraftServerMixin",
+    "PlayerListMixin",
     "PrimaryLevelDataMixin",
     "WorldBorderCommandMixin",
     "WorldBorderMixin"

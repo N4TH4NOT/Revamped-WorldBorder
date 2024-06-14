@@ -16,7 +16,7 @@ public class LocalBorderListener
 
     private final ServerLevel level;
 
-    LocalBorderListener(ServerLevel parent) {
+    public LocalBorderListener(ServerLevel parent) {
         this.level = parent;
     }
     public void onBorderSizeSet(@NotNull WorldBorder border, double size) {

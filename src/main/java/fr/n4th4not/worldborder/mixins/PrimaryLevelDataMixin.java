@@ -29,6 +29,9 @@ public abstract class PrimaryLevelDataMixin
     implements IPrimaryLevelData {
 
     @Unique
+    private static final String STORAGE_KEY = "WorldsData";
+
+    @Unique
     private CompoundTag worldborders = new CompoundTag();
 
     @Inject(method = "parse", at =  @At("RETURN"))
@@ -37,13 +40,15 @@ public abstract class PrimaryLevelDataMixin
             CallbackInfoReturnable<PrimaryLevelData> cir) {
         LOGGER.debug("PrimaryLevelDataMixin#parse");
         PrimaryLevelDataMixin data = (PrimaryLevelDataMixin) (Object) cir.getReturnValue();
-        LOGGER.debug((data.worldborders = (CompoundTag) tag.get("WorldsData").orElseEmptyMap().getValue()).toString());
+        LOGGER.debug((data.worldborders = (CompoundTag) tag.get(STORAGE_KEY).orElseEmptyMap().getValue()).toString());
         //TODO: Handle when the level.dat doesn't exists
     }
 
-    @Inject(method = "setTagData", at = @At("HEAD"))
+    @Inject(method = "setTagData", at = @At("TAIL"))
     private void setTagData(RegistryAccess access, CompoundTag root, CompoundTag playerNbt, CallbackInfo ci) {
-        root.put("WorldBorders",this.worldborders);
+        LOGGER.debug("PrimaryLevelDataMixin#setTagData");
+        root.put(STORAGE_KEY,this.worldborders);
+        LOGGER.debug(root.toString());
     }
 
     @Override
