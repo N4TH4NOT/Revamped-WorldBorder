@@ -6,6 +6,7 @@ import com.mojang.serialization.Lifecycle;
 import fr.n4th4not.worldborder.IPrimaryLevelData;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.storage.LevelVersion;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,11 +30,10 @@ import static fr.n4th4not.worldborder.RevampedWorldBorder.LOGGER;
 public abstract class PrimaryLevelDataMixin
     implements IPrimaryLevelData {
 
-    @Unique
-    private static final String STORAGE_KEY = "WorldsData";
+    @Unique private static final String STORAGE_KEY = "WorldsData";
+    @Unique private CompoundTag worldborders = new CompoundTag();
 
-    @Unique
-    private CompoundTag worldborders = new CompoundTag();
+    @Shadow public abstract WorldBorder.Settings getWorldBorder();
 
     @Inject(method = "parse", at =  @At("RETURN"))
     private static void parse(Dynamic<Tag> tag, DataFixer fixer, int playerDataVersion, CompoundTag loadedPlayerTag,
@@ -41,7 +42,6 @@ public abstract class PrimaryLevelDataMixin
         LOGGER.debug("PrimaryLevelDataMixin#parse");
         PrimaryLevelDataMixin data = (PrimaryLevelDataMixin) (Object) cir.getReturnValue();
         LOGGER.debug((data.worldborders = (CompoundTag) tag.get(STORAGE_KEY).orElseEmptyMap().getValue()).toString());
-        //TODO: Handle when the level.dat doesn't exists
     }
 
     @Inject(method = "setTagData", at = @At("TAIL"))
@@ -52,8 +52,11 @@ public abstract class PrimaryLevelDataMixin
     }
 
     @Override
-    public @NotNull CompoundTag getWorldBorders() {
-        return worldborders;
+    public WorldBorder.@NotNull Settings getWorldBorder(@NotNull ResourceKey<Level> key) {
+        return WorldBorder.Settings.read(
+                new Dynamic<>(NbtOps.INSTANCE, this.worldborders.get(key.location().toString())),
+                getWorldBorder()
+        );
     }
 
     @Override

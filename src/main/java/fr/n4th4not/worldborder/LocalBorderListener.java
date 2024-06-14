@@ -1,11 +1,7 @@
 package fr.n4th4not.worldborder;
 
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundSetBorderCenterPacket;
-import net.minecraft.network.protocol.game.ClientboundSetBorderLerpSizePacket;
-import net.minecraft.network.protocol.game.ClientboundSetBorderSizePacket;
-import net.minecraft.network.protocol.game.ClientboundSetBorderWarningDelayPacket;
-import net.minecraft.network.protocol.game.ClientboundSetBorderWarningDistancePacket;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.border.BorderChangeListener;
 import net.minecraft.world.level.border.WorldBorder;

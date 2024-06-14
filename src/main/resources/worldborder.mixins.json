@@ -8,8 +8,7 @@
     "MinecraftServerMixin",
     "PlayerListMixin",
     "PrimaryLevelDataMixin",
-    "WorldBorderCommandMixin",
-    "WorldBorderMixin"
+    "WorldBorderCommandMixin"
   ],
   "minVersion": "0.8"
 }

@@ -1,11 +1,10 @@
 package fr.n4th4not.worldborder.mixins;
 
-import com.mojang.serialization.Dynamic;
 import fr.n4th4not.worldborder.IPrimaryLevelData;
 import fr.n4th4not.worldborder.LocalBorderListener;
 import fr.n4th4not.worldborder.RevampedWorldBorder;
 import net.minecraft.core.Registry;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.progress.ChunkProgressListener;
@@ -19,6 +18,7 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.level.storage.ServerLevelData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -38,27 +38,22 @@ public abstract class MinecraftServerMixin {
                              ServerLevel serverlevel, DimensionDataStorage dimensiondatastorage, WorldBorder worldborder) {
         RevampedWorldBorder.LOGGER.debug("MinecraftServerMixin#createLevels");
         for (ServerLevel level : getAllLevels()) {
-            String key = level.dimension().location().toString();
-            RevampedWorldBorder.LOGGER.debug(key);
+            ResourceKey<Level> key = level.dimension();
+            RevampedWorldBorder.LOGGER.debug(key.location().toString());
 
             WorldBorder border = level.getWorldBorder();
             purge(level, border);
 
             if (level.dimension() != Level.OVERWORLD) {
-                WorldBorder.Settings settings = WorldBorder.Settings.read(
-                        new Dynamic<>(NbtOps.INSTANCE, ((IPrimaryLevelData) serverleveldata).getWorldBorders().get(key)),
-                        serverleveldata.getWorldBorder()
-                );
-                if (level.getLevelData() instanceof DerivedLevelData data) {
-                    data.setWorldBorder(settings);
-                    border.applySettings(settings);
-                }
+                WorldBorder.Settings settings = ((IPrimaryLevelData) serverleveldata).getWorldBorder(key);
+                ((DerivedLevelData)level.getLevelData()).setWorldBorder(settings);
+                border.applySettings(settings);
             }
 
         }
     }
 
-
+    @Unique
     private void purge(ServerLevel level, WorldBorder border) {
         border.listeners.removeIf(listener -> listener.getClass().getPackageName().startsWith("net.minecraft."));
         border.listeners.add(new LocalBorderListener(level));
