@@ -3,14 +3,14 @@ package fr.n4th4not.worldborder.mixins;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
-import fr.n4th4not.worldborder.RevampedWorldBorder;
 import fr.n4th4not.worldborder.IPrimaryLevelData;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.EndTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelSettings;
+import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.storage.LevelVersion;
 import net.minecraft.world.level.storage.PrimaryLevelData;
@@ -57,9 +57,11 @@ public abstract class PrimaryLevelDataMixin
     }
 
     @Override
-    public void setWorldBorders(@NotNull CompoundTag nbt) {
+    public void setWorldBorder(@NotNull WorldBorder border, @NotNull ResourceKey<Level> key) {
         LOGGER.debug("PrimaryLevelDataMixin#setWorldBorders");
-        this.worldborders.merge(nbt);
-        LOGGER.debug(this.worldborders.toString());
+        CompoundTag nbt = new CompoundTag();
+        LOGGER.debug(nbt.toString());
+        border.createSettings().write(nbt);
+        this.worldborders.put(key.location().toString(), nbt);
     }
 }
