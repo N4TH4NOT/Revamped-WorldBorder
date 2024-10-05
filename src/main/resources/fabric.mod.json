@@ -16,7 +16,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "${mod_group}.Main"
+      "${mod_group}.RevWbMod"
     ]
   },
   "mixins": [

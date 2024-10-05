@@ -14,8 +14,8 @@ public abstract class UnmodifiableLevelPropertiesMixin {
     @Unique private WorldBorder.Properties worldBorder;
 
     @Inject(method = "setWorldBorder", at = @At(value = "HEAD"))
-    public void setWorldBorder(WorldBorder.Properties settings, CallbackInfo ci) {
-        this.worldBorder = settings;
+    public void setWorldBorder(WorldBorder.Properties prop, CallbackInfo ci) {
+        this.worldBorder = prop;
     }
 
     @Inject(method = "getWorldBorder", at = @At("RETURN"), cancellable = true)

@@ -4,11 +4,10 @@ import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Main
+public class RevWbMod
     implements ModInitializer {
 
-    public static final String MOD_ID = "rev_wb";
-    public static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(RevWbMod.class);
 
     @Override
     public void onInitialize() {

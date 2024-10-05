@@ -19,14 +19,14 @@ import java.util.function.Supplier;
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldMixin
     extends World {
-    protected ServerWorldMixin(MutableWorldProperties properties, RegistryKey<World> registryRef, DynamicRegistryManager registryManager, RegistryEntry<DimensionType> dimensionEntry, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates) {
-        super(properties, registryRef, registryManager, dimensionEntry, profiler, isClient, debugWorld, biomeAccess, maxChainedNeighborUpdates);
+    protected ServerWorldMixin(MutableWorldProperties prop, RegistryKey<World> key, DynamicRegistryManager regMan, RegistryEntry<DimensionType> dimEntry, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates) {
+        super(prop, key, regMan, dimEntry, profiler, isClient, debugWorld, biomeAccess, maxChainedNeighborUpdates);
     }
 
     @Inject(method = "saveLevel", at = @At("TAIL"))
     public void save(CallbackInfo ci) {
         if (super.getRegistryKey() != World.OVERWORLD && super.getRegistryManager().get(World.OVERWORLD.getRegistryRef()) instanceof World overworld) {
-            ((ILevelProperties) overworld.getLevelProperties()).saveWorldBorder(super.getWorldBorder(), super.getRegistryKey());
+            ((ILevelProperties) overworld.getLevelProperties()).saveWorldBorders(this);
         }
     }
 }

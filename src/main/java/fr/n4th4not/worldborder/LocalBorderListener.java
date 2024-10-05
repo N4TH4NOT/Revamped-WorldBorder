@@ -56,7 +56,7 @@ public class LocalBorderListener
     private void broadcast(Packet<ClientPlayPacketListener> packet) {
         if (this.level.getPlayers().isEmpty()) return;
 
-        Main.LOGGER.debug("Broadcast packet {} in {} to : {}",
+        RevWbMod.LOGGER.debug("Broadcast packet {} in {} to : {}",
                 packet.getClass().getSimpleName(),
                 this.level.getDimensionEntry().getIdAsString(),
                 String.join(", ", this.level.getPlayers().stream().map(player -> player.getGameProfile().getName()).toArray(CharSequence[]::new))

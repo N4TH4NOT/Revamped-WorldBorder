@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
     @Redirect(method = "sendWorldInfo", at =  @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getOverworld()Lnet/minecraft/server/world/ServerWorld;"))
-    public ServerWorld sendLevelInfo(MinecraftServer instance, ServerPlayerEntity player, ServerWorld world) {
+    public ServerWorld sendLevelInfo(MinecraftServer srv, ServerPlayerEntity player, ServerWorld world) {
         return world;
     }
 }

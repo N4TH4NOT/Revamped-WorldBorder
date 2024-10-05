@@ -11,37 +11,37 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(WorldBorderCommand.class)
 public abstract class WorldBorderCommandMixin {
     @Redirect(method = "executeBuffer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getOverworld()Lnet/minecraft/server/world/ServerWorld;"))
-    private static ServerWorld executeBuffer(MinecraftServer instance, ServerCommandSource source) {
-        return source.getWorld();
+    private static ServerWorld executeBuffer(MinecraftServer srv, ServerCommandSource src) {
+        return src.getWorld();
     }
 
     @Redirect(method = "executeDamage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getOverworld()Lnet/minecraft/server/world/ServerWorld;"))
-    private static ServerWorld executeDamage(MinecraftServer instance, ServerCommandSource source) {
-        return source.getWorld();
+    private static ServerWorld executeDamage(MinecraftServer srv, ServerCommandSource src) {
+        return src.getWorld();
     }
 
     @Redirect(method = "executeWarningTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getOverworld()Lnet/minecraft/server/world/ServerWorld;"))
-    private static ServerWorld executeWarningTime(MinecraftServer instance, ServerCommandSource source) {
-        return source.getWorld();
+    private static ServerWorld executeWarningTime(MinecraftServer srv, ServerCommandSource src) {
+        return src.getWorld();
     }
 
     @Redirect(method = "executeWarningDistance", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getOverworld()Lnet/minecraft/server/world/ServerWorld;"))
-    private static ServerWorld executeWarningDistance(MinecraftServer instance, ServerCommandSource source) {
-        return source.getWorld();
+    private static ServerWorld executeWarningDistance(MinecraftServer srv, ServerCommandSource src) {
+        return src.getWorld();
     }
 
     @Redirect(method = "executeGet", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getOverworld()Lnet/minecraft/server/world/ServerWorld;"))
-    private static ServerWorld executeGet(MinecraftServer instance, ServerCommandSource source) {
-        return source.getWorld();
+    private static ServerWorld executeGet(MinecraftServer srv, ServerCommandSource src) {
+        return src.getWorld();
     }
 
     @Redirect(method = "executeCenter", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getOverworld()Lnet/minecraft/server/world/ServerWorld;"))
-    private static ServerWorld executeCenter(MinecraftServer instance, ServerCommandSource source) {
-        return source.getWorld();
+    private static ServerWorld executeCenter(MinecraftServer srv, ServerCommandSource src) {
+        return src.getWorld();
     }
 
     @Redirect(method = "executeSet", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getOverworld()Lnet/minecraft/server/world/ServerWorld;"))
-    private static ServerWorld executeSet(MinecraftServer instance, ServerCommandSource source) {
-        return source.getWorld();
+    private static ServerWorld executeSet(MinecraftServer srv, ServerCommandSource src) {
+        return src.getWorld();
     }
 }
