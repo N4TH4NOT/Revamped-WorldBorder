@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "${mod_group}.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "LevelPropertiesMixin",
+    "MinecraftServerMixin",
+    "PlayerManagerMixin",
+    "ServerWorldMixin",
+    "UnmodifiableLevelPropertiesMixin",
+    "WorldBorderAccessor",
+    "WorldBorderCommandMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

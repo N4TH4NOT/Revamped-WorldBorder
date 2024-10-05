@@ -2,117 +2,80 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'fabric-loom' version '1.7-SNAPSHOT'
 }
 
-version = "${mc_ver}-${mod_ver}"
+version = "fabric-${mc_ver}-${mod_ver}"
 group = mod_group
-archivesBaseName = mod_id
-
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+base {
+    archivesName = mod_id
+}
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-minecraft {
-    mappings channel: mapping_channel, version: mapping_version
+loom {
+    splitEnvironmentSourceSets()
 
-    copyIdeResources = true
-
-    // Currently, this location cannot be changed from the default.
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    runs {
-        configureEach {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-            property 'forge.enabledGameTestNamespaces', mod_id
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
         }
+    }
 
-        client {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
-        server {
-            property 'forge.enabledGameTestNamespaces', mod_id
-//            args '--nogui'
-        }
-
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
-        data {
-            workingDirectory project.file('run-data')
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-        }
-
-}
-
-mixin {
-    add sourceSets.main, 'worldborder.refmap.json'
-    config 'worldborder.mixins.json'
-}
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-repositories
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${mc_ver}-${fg_ver}"
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    minecraft "com.mojang:minecraft:${project.mc_ver}"
+    mappings "net.fabricmc:yarn:${project.yarn_map}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_ver}"
+
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fb_ver}"
+
 }
 
 tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [
-            mc_ver: mc_ver, mc_range: mc_range,
-            fg_ver: fg_ver, fg_range: fg_range,
-            loader_range: loader_range,
-            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_ver: mod_ver,
-            mod_authors: mod_authors, mod_description: mod_description,
+            mc_ver: mc_ver, fb_ver: fb_ver, yarn_map: yarn_map, loader_ver: loader_ver,
+            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_ver: mod_ver, mod_group: mod_group,
+            mod_author: mod_author, mod_desc: mod_desc, mod_bug_tracker: mod_bug_tracker, mod_git: mod_git
     ]
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta', 'worldborder.mixins.json']) {
+    filesMatching(["fabric.mod.json", "pack.mcmeta", "${mod_id}.mixins.json".toString()]) {
         expand replaceProperties + [project: project]
     }
 }
 
-tasks.named('jar', Jar).configure {
-    manifest {
-        attributes([
-                'Specification-Title'     : mod_id,
-                'Specification-Vendor'    : mod_authors,
-                'Specification-Version'   : '1', // We are version 1 of ourselves
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : mod_authors,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+}
+
+java {
+    withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.base.archivesName.get()}"}
     }
-    finalizedBy 'reobfJar'
 }
 
 publishing {
     publications {
-        register('mavenJava', MavenPublication) {
-            artifact jar
+        create("mavenJava", MavenPublication) {
+            artifactId = project.base.archivesName.get()
+            from components.java
         }
     }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
-    }
-}
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+        // Notice: This block does NOT have the same function as the block in the top level.
+        // The repositories here will be used for publishing your artifact, not for
+        // retrieving dependencies.
+    }
 }

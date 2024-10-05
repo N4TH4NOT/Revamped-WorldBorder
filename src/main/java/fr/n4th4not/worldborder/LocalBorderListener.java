@@ -1,54 +1,66 @@
 package fr.n4th4not.worldborder;
 
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.*;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.border.BorderChangeListener;
-import net.minecraft.world.level.border.WorldBorder;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderInterpolateSizeS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderSizeChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderWarningBlocksChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPacket;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.border.WorldBorderListener;
 
 public class LocalBorderListener
-    implements BorderChangeListener {
+    implements WorldBorderListener {
 
-    private final ServerLevel level;
+    private final ServerWorld level;
 
-    public LocalBorderListener(ServerLevel parent) {
+    public LocalBorderListener(ServerWorld parent) {
         this.level = parent;
     }
-    public void onBorderSizeSet(@NotNull WorldBorder border, double size) {
-        broadcast(new ClientboundSetBorderSizePacket(border));
+
+    @Override
+    public void onSizeChange(WorldBorder border, double size) {
+        broadcast(new WorldBorderSizeChangedS2CPacket(border));
     }
 
-    public void onBorderSizeLerping(@NotNull WorldBorder border, double oldSize, double size, long time) {
-        broadcast(new ClientboundSetBorderLerpSizePacket(border));
+    @Override
+    public void onInterpolateSize(WorldBorder border, double fromSize, double toSize, long time) {
+        broadcast(new WorldBorderInterpolateSizeS2CPacket(border));
     }
 
-    public void onBorderCenterSet(@NotNull WorldBorder border, double x, double z) {
-        broadcast(new ClientboundSetBorderCenterPacket(border));
+    @Override
+    public void onCenterChanged(WorldBorder border, double centerX, double centerZ) {
+        broadcast(new WorldBorderCenterChangedS2CPacket(border));
     }
 
-    public void onBorderSetWarningTime(@NotNull WorldBorder border, int time) {
-        broadcast(new ClientboundSetBorderWarningDelayPacket(border));
+    @Override
+    public void onWarningTimeChanged(WorldBorder border, int warningTime) {
+        broadcast(new WorldBorderWarningTimeChangedS2CPacket(border));
     }
 
-    public void onBorderSetWarningBlocks(@NotNull WorldBorder border, int blocks) {
-        broadcast(new ClientboundSetBorderWarningDistancePacket(border));
+    @Override
+    public void onWarningBlocksChanged(WorldBorder border, int warningBlockDistance) {
+        broadcast(new WorldBorderWarningBlocksChangedS2CPacket(border));
     }
 
-    public void onBorderSetDamagePerBlock(@NotNull WorldBorder border, double damage) {
+    @Override
+    public void onDamagePerBlockChanged(WorldBorder border, double damagePerBlock) {
     }
 
-    public void onBorderSetDamageSafeZOne(@NotNull WorldBorder border, double distance) {
+    @Override
+    public void onSafeZoneChanged(WorldBorder border, double safeZoneRadius) {
     }
 
-    private void broadcast(Packet<?> packet) {
-        if (this.level.players().isEmpty()) return;
+    private void broadcast(Packet<ClientPlayPacketListener> packet) {
+        if (this.level.getPlayers().isEmpty()) return;
 
-        RevampedWorldBorder.LOGGER.debug("Broadcast change in {} to : {}",
-                this.level.dimension().location(),
-                String.join(", ", this.level.players().stream().map(player -> player.getGameProfile().getName()).toArray(CharSequence[]::new))
+        Main.LOGGER.debug("Broadcast packet {} in {} to : {}",
+                packet.getClass().getSimpleName(),
+                this.level.getDimensionEntry().getIdAsString(),
+                String.join(", ", this.level.getPlayers().stream().map(player -> player.getGameProfile().getName()).toArray(CharSequence[]::new))
         );
-        this.level.players().forEach(player -> player.connection.send(packet));
+        this.level.getPlayers().forEach(player -> player.networkHandler.sendPacket(packet));
     }
-
 }
