@@ -52,7 +52,7 @@ public abstract class LevelPropertiesMixin
     }
 
     @Override
-    public @NotNull WorldBorder.Properties parseWorldBorders(@NotNull World world) {
+    public @NotNull WorldBorder.Properties parseWorldBorder(@NotNull World world) {
         return WorldBorder.Properties.fromDynamic(
                 new Dynamic<>(NbtOps.INSTANCE, this.worldborders.get(Constants.getIdentifier(world))),
                 getWorldBorder()
@@ -60,11 +60,12 @@ public abstract class LevelPropertiesMixin
     }
 
     @Override
-    public void saveWorldBorders(@NotNull World world) {
+    public void saveWorldBorder(@NotNull World world) {
         LOGGER.debug("LevelPropertiesMixin#saveWorldBorder");
         NbtCompound nbt = new NbtCompound();
-        LOGGER.debug(nbt.toString());
+        String worldId = Constants.getIdentifier(world);
         world.getWorldBorder().write().writeNbt(nbt);
-        this.worldborders.put(Constants.getIdentifier(world), nbt);
+        LOGGER.debug(worldId + ": " + nbt);
+        this.worldborders.put(worldId, nbt);
     }
 }

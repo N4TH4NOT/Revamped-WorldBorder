@@ -6,7 +6,6 @@
     "LevelPropertiesMixin",
     "MinecraftServerMixin",
     "PlayerManagerMixin",
-    "ServerWorldMixin",
     "UnmodifiableLevelPropertiesMixin",
     "WorldBorderAccessor",
     "WorldBorderCommandMixin"

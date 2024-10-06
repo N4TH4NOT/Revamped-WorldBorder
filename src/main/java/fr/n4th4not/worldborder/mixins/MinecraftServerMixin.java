@@ -7,6 +7,7 @@ import fr.n4th4not.worldborder.LocalBorderListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.UnmodifiableLevelProperties;
@@ -16,6 +17,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import static fr.n4th4not.worldborder.RevWbMod.LOGGER;
 
@@ -33,10 +36,21 @@ public abstract class MinecraftServerMixin {
             purge(world, wb);
 
             if (world.getLevelProperties() instanceof UnmodifiableLevelProperties prop) {
-                WorldBorder.Properties wbProp = ((ILevelProperties) srvProp).parseWorldBorders(world);
+                WorldBorder.Properties wbProp = ((ILevelProperties) srvProp).parseWorldBorder(world);
                 prop.setWorldBorder(wbProp);
                 wb.load(wbProp);
             }
+        }
+    }
+
+    @Inject(method = "save", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getWorldBorder()Lnet/minecraft/world/border/WorldBorder;"), locals = LocalCapture.CAPTURE_FAILHARD)
+    public void save(boolean suppressLogs, boolean flush, boolean force, CallbackInfoReturnable<Boolean> cir, boolean bl, ServerWorld overworld,
+                  ServerWorldProperties prop) {
+        LOGGER.debug("MinecraftServerMixin#save");
+        ILevelProperties iprop = (ILevelProperties) prop;
+        for (ServerWorld world : getWorlds()) {
+            if (!world.getRegistryKey().getValue().equals(World.OVERWORLD.getValue()))
+                iprop.saveWorldBorder(world);
         }
     }
 
