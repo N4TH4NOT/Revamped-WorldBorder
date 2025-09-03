@@ -2,7 +2,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'fabric-loom' version '1.7-SNAPSHOT'
+    id 'fabric-loom' version "${loom_ver}-SNAPSHOT"
 }
 
 version = "fabric-${mc_ver}-${mod_ver}"
